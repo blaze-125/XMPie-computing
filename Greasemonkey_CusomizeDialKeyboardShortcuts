@@ -1,0 +1,20 @@
+// ==UserScript==
+// @name        uStore_Save_KeyboardShortcut
+// @namespace   YOUR NAME
+// @description Ctrl + Alt + s to save dial changes
+// @include     http://YOUR DOMAIN/ustoreadmin/DialSetup.aspx*
+// @version     1
+// @grant       none
+// ==/UserScript==
+
+document.addEventListener ("keydown", function (zEvent) {
+    if (zEvent.ctrlKey  &&  zEvent.altKey  &&  zEvent.code === "KeyS") {
+      console.log("Hotkey pressed to save Dial changes");
+        document.getElementById("ctl00_cphButtons_LinkButtonSave").click();
+    }
+  else if (zEvent.ctrlKey  &&  zEvent.altKey  &&  zEvent.code === "KeyC")
+  {
+    console.log("Hotkey pressed to cancel Dial changes");
+    document.getElementById("ctl00_cphButtons_LinkbuttonCancel").click();
+  }
+} );
