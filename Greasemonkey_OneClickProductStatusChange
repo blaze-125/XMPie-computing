@@ -1,0 +1,83 @@
+// ==UserScript==
+// @name        uStore Product list - Change Product State
+// @namespace   YOUR USENAME
+// @include     http://YOUR DOMAIN INFO/uStoreAdmin/ProductList.aspx*
+// @version     1
+// @grant       none
+// ==/UserScript==
+
+
+
+ModifyExistingButtons();
+
+function ModifyExistingButtons(){
+  console.log("greasemonkey is here");
+  $('head').append('<script type=text/javascript>function GoOffline(IncomingProduct){var theLinkToOpen = document.getElementById(IncomingProduct).href;var prodPage = window.open(theLinkToOpen);prodPage.document.body.setAttribute("onload", "document.getElementById(\x27ctl00_cphMainContent_btnOffline\x27).click();");}</script>');
+  $('head').append('<script type=text/javascript>function GoOnline(IncomingProduct){var theLinkToOpen = document.getElementById(IncomingProduct).href;var prodPage = window.open(theLinkToOpen);prodPage.document.body.setAttribute("onload", "document.getElementById(\x27ctl00_cphMainContent_btnOnline\x27).click();");}</script>');
+  
+  var CommonIdPattern = /ctl00_cphMainContent_ProductListGrid_ctl00_ctl(\d+)_lnkEditProduct/g
+  var AllTheAnchors = document.getElementsByTagName("a");
+  //console.log(AllTheAnchors);
+    
+
+  for(var i=0; i<AllTheAnchors.length; i++){
+    //console.log(i);
+    var CommonId;
+    var pass=1;
+    while(pass<3)
+      {
+        CommonId = CommonIdPattern.exec(AllTheAnchors[i].id);
+        if(CommonId === null){
+          pass++; 
+        }
+        else{
+          //console.log(CommonId[0]);
+          pass = 3;
+        }
+      }
+    
+    if(CommonId === null){
+          //do nothing
+        }
+    else{
+      var theProductLink = AllTheAnchors[i].href;
+      var theProductImage = document.getElementById("ctl00_cphMainContent_ProductListGrid_ctl00_ctl" + CommonId[1] + "_imgProductStatus");
+      console.log(theProductImage);
+      if (theProductImage.src.toLowerCase().includes("offline")){
+        //console.log("offline")
+        theProductImage.setAttribute("onclick","GoOnline('" + AllTheAnchors[i].id + "');");
+        theProductImage.setAttribute("title","Click to put product Online");
+      }
+      if (theProductImage.src.toLowerCase().includes("online")){
+        //console.log("online")
+        theProductImage.setAttribute("onclick","GoOffline('" + AllTheAnchors[i].id + "');");
+        theProductImage.setAttribute("title","Click to put product Offline");
+      }
+      
+      //console.log(CommonId[1]);
+      //console.log(theProductLink);
+        }
+  }    
+  console.log("greasemonkey is done");    
+}
+
+  //<a id="ctl00_cphMainContent_ProductListGrid_ctl00_ctl10_lnkEditProduct" href="ProductStatus.aspx?storeID=27&amp;productGroupID=221&amp;productID=1490">2015 Calendar</a>
+  //<img id="ctl00_cphMainContent_ProductListGrid_ctl00_ctl04_imgProductStatus" src="Images/online.png" style="border-width:0px;">
+  //<img id="ctl00_cphMainContent_ProductListGrid_ctl00_ctl08_imgProductStatus" src="Images/offline.png" style="border-width:0px;">
+
+
+//make it offline
+function GoOffline(IncomingProduct) {
+  //console.log(IncomingProduct)
+  var theLinkToOpen = document.getElementById(IncomingProduct).href;
+  var prodPage = window.open(theLinkToOpen);
+  prodPage.document.body.setAttribute("onload", "document.getElementById('ctl00_cphMainContent_btnOffline').click()");
+}
+
+//make it online
+function GoOnline(IncomingProduct){
+  //console.log(IncomingProduct)
+  var theLinkToOpen = document.getElementById(IncomingProduct).href;
+  var prodPage = window.open(theLinkToOpen);
+  prodPage.document.body.setAttribute("onload", "document.getElementById('ctl00_cphMainContent_btnOnline').click()");
+}
