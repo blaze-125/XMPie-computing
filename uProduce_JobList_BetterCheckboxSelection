@@ -1,0 +1,66 @@
+//To enable simultaneous multi-select on Checkboxes in JobCenter
+
+//locate the following file:
+//C:\XMPie\XMPieDashboard\JobCenter\JobList.aspx
+
+//Add this line to '$(document).ready(function()'
+document.getElementById("RAD_SPLITTER_ctl00_MainContentPlaceHolder_JobListSplitter").setAttribute("onmouseover", "addDLIClickEvent();");
+
+
+//Add these 2 functions in the script block
+
+//This function will simply add the attributes we need on the Checkboxes we need.
+function addDLIClickEvent() {
+    //console.log("Welcome");
+    var theCheckBoxes = document.querySelectorAll("input[type='checkbox']");
+    for (var i = 0; i < theCheckBoxes.length; i++) {
+        if (theCheckBoxes[i].type == "checkbox") {
+            //console.log(i);
+            if (!theCheckBoxes[i].getAttribute("onclick") == null) {
+                break;
+            }
+            theCheckBoxes[i].setAttribute("onclick", "chkbx_clicked(event, this)");
+            theCheckBoxes[i].setAttribute("title", "Shift + Click for multi select");
+            theCheckBoxes[i].setAttribute("onmouseover", "chkbx_hovered(event, this)");
+        }
+    }
+}
+
+//This function allows a user to CHECK multiple Checkboxes using the keyboard Shift key
+//This replicates the Yahoo!Mail feature that does the same thing
+function chkbx_clicked(event, control) {
+    if (!control.checked) { return; }//only perform multi select
+    var regexRemove = /ctl00_MainContentPlaceHolder_JobGridView_ctl(\d+)_SelectBox/i;
+    if (!regexRemove.test(control.id)) { return; }
+    //console.log("checked == " + control.checked);
+    if (event.shiftKey) {
+        var theboxes = document.querySelectorAll("input[type='checkbox']");
+        var startIndex = parseInt(control.id.replace(regexRemove, '$1'), 10) - 3;//the JobList index starts at 2...
+        ////console.log("start " + startIndex);
+        var boxesInBetween = [];
+        for (startIndex; startIndex > -1; startIndex--) {
+            //console.log(theboxes[startIndex].id + " = " + theboxes[startIndex].checked);
+            if (theboxes[startIndex].checked) {
+                break;
+            }
+            else {
+                boxesInBetween.push(theboxes[startIndex]);
+            }
+        }
+        //console.log("the boxes in between" + boxesInBetween);
+
+        for (var i = 0; i < boxesInBetween.length; i++) {
+            boxesInBetween[i].checked = true;
+        }
+    }
+}
+
+
+//This function allows a user to Check/Uncheck multiple Checkboxes using a single mouse click
+//This function replicates what you can do on the Layers palette of Adobe Indesign
+function chkbx_hovered(event, control) {
+    //console.log(event.buttons == 1);
+    if (event.buttons == 1) {
+        control.checked = control.checked ? false : true;
+    }
+}
